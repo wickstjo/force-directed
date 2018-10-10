@@ -1,9 +1,11 @@
-var nodes = []
-var links = []
+
 
 d3.json("facebookFriends.json").then((data) => {
 
 var colour = "lightgrey";
+
+var nodes = [];
+var links = [];
 
 var canvas = d3.select("body")
    .append("div")
