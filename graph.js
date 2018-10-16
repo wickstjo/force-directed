@@ -82,7 +82,7 @@ window.watchResize(() => {
             node = canvas.append("g").attr("class", "node").selectAll("node"),
             label = canvas.append("g").attr("class", "labels").selectAll("rect"),
             text = canvas.append("g").attr("class", "text").selectAll("text");
-            
+
         //Using force properties on links and nodes
         simulation.nodes(nodes)
         simulation.force("link").links(links);
@@ -139,7 +139,13 @@ window.watchResize(() => {
                 .attr("stroke-width", (d) => {
                     return d.weight * 2
                 })
-                .attr("fill", "gray");
+                .attr("fill", "gray")
+                .on("mouseover", () => {
+                    return text.style("visibility", "visible")
+                })
+                .on("mouseout", () => {
+                    return text.style("visibility", "hidden")
+                });
 
             //Properties for label
             label.attr('x', (d) => {
