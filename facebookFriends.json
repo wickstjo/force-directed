@@ -1,35 +1,86 @@
 {
-	"facebookFriends" :
-	[
-		{
-			"name" : "Jonny", "FacebookID" : 1, "friends" : [{"FriendId" : 2}, {"FriendId" : 3}, {"FriendId" : 4}]
+	"facebookFriends": [{
+			"name": "Jonny",
+			"FacebookID": 1,
+			"friends": [{
+				"FriendId": 2
+			}, {
+				"FriendId": 3
+			}, {
+				"FriendId": 4
+			}]
 		},
 		{
-			"name" : "Kalle", "FacebookID" : 2, "friends" : [{"FriendId" : 1}, {"FriendId" : 5}, {"FriendId" : 6}, {"FriendId" : 7}]
+			"name": "Kalle",
+			"FacebookID": 2,
+			"friends": [{
+				"FriendId": 1
+			}, {
+				"FriendId": 5
+			}, {
+				"FriendId": 6
+			}, {
+				"FriendId": 7
+			}]
 		},
 		{
-			"name" : "Ville", "FacebookID" : 3, "friends" : [{"FriendId" : 1}, {"FriendId" : 8}, {"FriendId" : 2}]
+			"name": "Ville",
+			"FacebookID": 3,
+			"friends": [{
+				"FriendId": 1
+			}, {
+				"FriendId": 8
+			}, {
+				"FriendId": 2
+			}]
 		},
 		{
-			"name" : "Lisa", "FacebookID" : 4, "friends" : [{"FriendId" : 1}, {"FriendId" : 9}, {"FriendId" : 6}]
+			"name": "Lisa",
+			"FacebookID": 4,
+			"friends": [{
+				"FriendId": 1
+			}, {
+				"FriendId": 9
+			}, {
+				"FriendId": 6
+			}]
 		},
 		{
-			"name" : "Nisse", "FacebookID" : 5, "friends" : [{"FriendId" : 2}]
+			"name": "Nisse",
+			"FacebookID": 5,
+			"friends": [{
+				"FriendId": 2
+			}]
 		},
 		{
-			"name" : "Eva", "FacebookID" : 6, "friends" : [{"FriendId" : 2}, {"FriendId" : 4}]
+			"name": "Eva",
+			"FacebookID": 6,
+			"friends": [{
+				"FriendId": 2
+			}, {
+				"FriendId": 4
+			}]
 		},
 		{
-			"name" : "Abraham", "FacebookID" : 7, "friends" : [{"FriendId" : 2}]
+			"name": "Abraham",
+			"FacebookID": 7,
+			"friends": [{
+				"FriendId": 2
+			}]
 		},
 		{
-			"name" : "Tom", "FacebookID" : 8, "friends" : [{"FriendId" : 3}]
+			"name": "Tom",
+			"FacebookID": 8,
+			"friends": [{
+				"FriendId": 3
+			}]
 		},
 		{
-			"name" : "Peter", "FacebookID" : 9, "friends" : [{"FriendId" : 4}]
-		},
-		{
-			"name" : "Johan", "FacebookID" : 10, "friends" : [{"FriendId" : 5}, {"FriendId" : 7}]
+			"name": "Peter",
+			"FacebookID": 9,
+			"friends": [{
+				"FriendId": 4
+			}]
 		}
 	]
 }
