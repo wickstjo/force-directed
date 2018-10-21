@@ -77,8 +77,8 @@ window.watchResize(() => {
             .on("tick", ticked)
 
 
-        //Just to make things easier down the line        
-        var link = canvas.append("g").selectAll("link"),
+        //Just to make things easier down the line       
+        var link = canvas.append("g").attr("class", "links").selectAll("link"),
             node = canvas.append("g").attr("class", "node").selectAll("node"),
             label = canvas.append("g").attr("class", "labels").selectAll("rect"),
             text = canvas.append("g").attr("class", "text").selectAll("text");
@@ -103,7 +103,7 @@ window.watchResize(() => {
         text = text.data(nodes)
             .enter().append("text").style("visibility", "hidden");
 
-        //Draw the links and nodes
+        //Draw the links and nodes etc
         function ticked() {
 
             //Properties for links
@@ -141,24 +141,26 @@ window.watchResize(() => {
                 })
                 .attr("fill", "gray")
                 .on("mouseover", () => {
-                    return text.style("visibility", "visible")
+                    return text.style("visibility", "visible"), 
+                            label.style("visibility", "visible");
                 })
                 .on("mouseout", () => {
-                    return text.style("visibility", "hidden")
+                    return text.style("visibility", "hidden"),
+                            label.style("visibility", "hidden");
                 });
 
             //Properties for label
             label.attr('x', (d) => {
-                    return d.x;
+                    return d.x - d.name.length * 7;
                 })
                 .attr('y', (d) => {
-                    return d.y;
+                    return d.y - 20;
                 })
                 .attr("width", (d) => {
-                    return 60;
+                    return d.name.length * 14;
                 })
-                .attr("height", 50)
-                .style("fill", "blue");
+                .attr("height", 30)
+                .style("fill", "white");
 
             //Properties for text
             text.attr('dx', (d) => {
