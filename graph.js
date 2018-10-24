@@ -126,15 +126,11 @@ window.watchResize(() => {
                     return d.target.y;
                 })
                 .attr("stroke", "#2c3539")
-                .attr("stroke-width", () => {
-                    return size / 2
-                });
+                .attr("stroke-width", size / 2 );
 
 
             //Properties for nodes    
-            node.attr('r', () => {
-                    return size;
-                })
+            node.attr('r', size)
                 .attr('cx', (d) => {
                     return d.x;
                 })
@@ -180,9 +176,7 @@ window.watchResize(() => {
                 .text((d) => {
                     return d.name;
                 })
-                .style("font-size", () => {
-                    return size * 3
-                })
+                .style("font-size", size * 3)
                 .style("font-weight", 600)
                 .style("text-anchor", "middle");
 
