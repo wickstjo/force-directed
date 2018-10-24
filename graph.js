@@ -14,22 +14,26 @@ window.watchResize(() => {
             color: "lightgrey",
             height: window.innerHeight,
             width: window.innerWidth,
-            radius: 3,
-            padding: 20
+            padding: 20,
+            size: { 
+                small: 16,
+                medium: 60,
+                large: 88 
+            }
         }
 
         //Create variables to use with json data
         var nodes = [];
         var links = [];
-
+        
 
         //loop through all entries
         for (let key in data.facebookFriends) {
             let name = data.facebookFriends[key].name
             let id = data.facebookFriends[key].FacebookID
             let friends = data.facebookFriends[key].friends
-            let weight = friends.length
-
+            let weight = friends.length * 4
+            
             //Push data in nodes array
             nodes.push({
                 'id': id,
@@ -50,10 +54,12 @@ window.watchResize(() => {
 
             }
         }
+    
         //testing
         console.log(nodes);
         console.log(links);
-
+        
+        var size = nodeSize(nodes, settings);
 
         //Generate canvas
         var canvas = d3.select("body").append("svg")
@@ -66,13 +72,13 @@ window.watchResize(() => {
         var simulation = d3.forceSimulation(nodes)
             .force("charge", d3.forceManyBody().strength(-40))
             .force("center", d3.forceCenter(settings.width / 2, settings.height / 2))
-            .force("collision", d3.forceCollide().radius((d) => {
-                return d.weight * 40
+            .force("collision", d3.forceCollide().radius(() => {
+                return size * 6
             }))
             .force("link", d3.forceLink().id((d) => {
                 return d.id;
-            }).distance((d) => {
-                return d.weight / 10
+            }).distance(() => {
+                return size / 5
             }))
             .on("tick", ticked)
 
@@ -101,7 +107,7 @@ window.watchResize(() => {
 
         //Append text to each entry
         text = text.data(nodes)
-            .enter().append("text").style("visibility", "hidden");
+            .enter().append("text").style("visibility", "visible");
 
         //Draw the links and nodes etc
         function ticked() {
@@ -120,14 +126,14 @@ window.watchResize(() => {
                     return d.target.y;
                 })
                 .attr("stroke", "#2c3539")
-                .attr("stroke-width", (d) => {
-                    return d.weight * 2
+                .attr("stroke-width", () => {
+                    return size / 2
                 });
 
 
             //Properties for nodes    
-            node.attr('r', (d) => {
-                    return d.weight * 25;
+            node.attr('r', () => {
+                    return size;
                 })
                 .attr('cx', (d) => {
                     return d.x;
@@ -137,29 +143,31 @@ window.watchResize(() => {
                 })
                 .attr("stroke", "black")
                 .attr("stroke-width", (d) => {
-                    return d.weight * 2
+                    return size / 1.5
                 })
                 .attr("fill", "gray")
                 .on("mouseover", () => {
-                    return text.style("visibility", "visible"), 
-                            label.style("visibility", "visible");
+                    return text.style("visibility", "visible"),
+                        label.style("visibility", "hidden");
                 })
                 .on("mouseout", () => {
-                    return text.style("visibility", "hidden"),
-                            label.style("visibility", "hidden");
+                    return text.style("visibility", "visible"),
+                        label.style("visibility", "hidden");
                 });
 
             //Properties for label
             label.attr('x', (d) => {
-                    return d.x - d.name.length * 7;
+                    return d.x - d.name.length;
                 })
                 .attr('y', (d) => {
-                    return d.y - 20;
+                    return d.y - d.weight * 3;
                 })
                 .attr("width", (d) => {
-                    return d.name.length * 14;
+                    return d.name.length * d.weight * 3;
                 })
-                .attr("height", 30)
+                .attr("height", (d) => {
+                    return size
+                })
                 .style("fill", "white");
 
             //Properties for text
@@ -172,7 +180,9 @@ window.watchResize(() => {
                 .text((d) => {
                     return d.name;
                 })
-                .style("font-size", 20)
+                .style("font-size", () => {
+                    return size * 3
+                })
                 .style("font-weight", 600)
                 .style("text-anchor", "middle");
 
