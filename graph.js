@@ -7,10 +7,7 @@ window.watchResize(() => {
    // Read in json file with promise
    d3.json("facebookFriends.json").then((data) => {
 
-      // FIX FRIENDS ARRAY
-      data = fix(data);
-
-      //Settings for canvas    
+      // SETTINGS OBJECT
       var settings = {
          height: window.innerHeight,
          width: window.innerWidth,
@@ -25,11 +22,6 @@ window.watchResize(() => {
             family: 'Open Sans',
             size: 15,
             weight: 600
-         },
-         size: { 
-               small: 16,
-               medium: 60,
-               large: 88 
          },
          distance: 15,
          collision: 6,
@@ -99,17 +91,17 @@ window.watchResize(() => {
       simulation.force("link").links(links);
 
       // APPEND LINKS, NODES, LABELS & TEXT TO EACH ENTRY
-      link = link.data(links).enter().append("line")
-      node = node.data(nodes).enter().append("circle")
+      link  = link.data(links).enter().append("line")
+      node  = node.data(nodes).enter().append("circle")
       label = label.data(nodes).enter().append("rect")
-      text = text.data(nodes).enter().append("text")
+      text  = text.data(nodes).enter().append("text")
 
       // RENDER FUNCTION
       function render() {
 
-      //Using force properties on links and nodes
-      simulation.nodes(nodes)
-      simulation.force("link").links(links);
+         //Using force properties on links and nodes
+         simulation.nodes(nodes)
+         simulation.force("link").links(links);
 
          link
             .attr("x1", (d) => { return d.source.x; })
@@ -137,9 +129,7 @@ window.watchResize(() => {
             })
 
             // MOUSEOUT
-            .on('mouseout', function() {
-               $('#tooltip').css('opacity', 0)
-            })
+            .on('mouseout', () => { $('#tooltip').css('opacity', 0) })
 
          label
             .attr('x', (d) => { return d.x; })
