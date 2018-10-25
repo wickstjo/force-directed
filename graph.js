@@ -7,17 +7,16 @@ window.watchResize(() => {
    // Read in json file with promise
    d3.json("facebookFriends.json").then((data) => {
 
+      // FIX FRIENDS ARRAY
+      data = fix(data);
+
       //Settings for canvas    
       var settings = {
          height: window.innerHeight,
          width: window.innerWidth,
          padding: 10,
          background: "lightgrey",
-         node: {
-            background: 'yellow',
-            hover: '#B1E9C8',
-            multiplier: 15
-         },
+         colors: ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6', '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D', '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A', '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC', '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC', '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399', '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680', '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933', '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3', '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'],
          border: {
             color: '#2c3539',
             size: 2
@@ -25,7 +24,6 @@ window.watchResize(() => {
          font: {
             family: 'Open Sans',
             size: 15,
-            color: 'red',
             weight: 600
          },
          size: { 
@@ -33,8 +31,9 @@ window.watchResize(() => {
                medium: 60,
                large: 88 
          },
-         distance: 5,
-         collision: 6
+         distance: 15,
+         collision: 6,
+         multiplier: 15
       }
 
       // CONTAINERS
@@ -82,9 +81,9 @@ window.watchResize(() => {
       var simulation = d3.forceSimulation(nodes)
          .force("charge", d3.forceManyBody().strength(-40))
          .force("center", d3.forceCenter(settings.width / 2, settings.height / 2))
-         .force("collision", d3.forceCollide().radius(settings.collision * settings.node.multiplier))
+         .force("collision", d3.forceCollide().radius(settings.collision * settings.multiplier))
          .force("link", d3.forceLink().id((d) => { return d.id; })
-         .distance(settings.distance * settings.node.multiplier))
+         .distance(settings.distance * settings.multiplier))
 
          // RENDER SIMULATION
          .on("tick", render)
@@ -108,7 +107,7 @@ window.watchResize(() => {
       // RENDER FUNCTION
       function render() {
 
-               //Using force properties on links and nodes
+      //Using force properties on links and nodes
       simulation.nodes(nodes)
       simulation.force("link").links(links);
 
@@ -122,16 +121,15 @@ window.watchResize(() => {
             .style('pointer-events', 'none')
 
          node
-            .attr('r', (d) => { return d.friends * settings.node.multiplier })
+            .attr('r', (d) => { return d.friends * settings.multiplier })
             .attr('cx', (d) => { return d.x; })
             .attr('cy', (d) => { return d.y; })
             .attr("stroke", settings.border.color)
             .attr("stroke-width", settings.border.size)
-            .attr("fill", settings.node.background)
+            .attr("fill", (d, i) => { return settings.colors[i]})
             
             // MOUSEOVER
-            .on('mouseover', function(d) {
-               d3.select(this).attr('fill', settings.node.hover)
+            .on('mouseover', (d) => {
                $('#tooltip').html(d.name + ' (' + d.friends + ')')
                $('#tooltip').css('left', d3.event.pageX - ($('#tooltip').width() / 1.5) + 'px')
                $('#tooltip').css('top', d3.event.pageY + 20 + 'px')
@@ -140,7 +138,6 @@ window.watchResize(() => {
 
             // MOUSEOUT
             .on('mouseout', function() {
-               d3.select(this).attr('fill', settings.node.background)
                $('#tooltip').css('opacity', 0)
             })
 
