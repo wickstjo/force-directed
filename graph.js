@@ -2,71 +2,91 @@
 window.watchResize(() => {
 
    // EMPTY OLD CONTENT BEFORE RENDERING NEW 
-   $('body').html("");
+   $('body').html('<div id="tooltip"></div>');
 
    // Read in json file with promise
    d3.json("facebookFriends.json").then((data) => {
 
       //Settings for canvas    
       var settings = {
-         color: "lightgrey",
          height: window.innerHeight,
          width: window.innerWidth,
-         padding: 20,
+         padding: 10,
+         background: "lightgrey",
+         node: {
+            background: 'yellow',
+            hover: '#B1E9C8',
+            multiplier: 15
+         },
+         border: {
+            color: '#2c3539',
+            size: 2
+         },
+         font: {
+            family: 'Open Sans',
+            size: 15,
+            color: 'red',
+            weight: 600
+         },
          size: { 
                small: 16,
                medium: 60,
                large: 88 
-         }
+         },
+         distance: 5,
+         collision: 6
       }
 
-      //Create variables to use with json data
+      // CONTAINERS
       var nodes = [];
       var links = [];
 
-      //loop through all entries
+      // LOOP THROUGH EVERY ENTRY
       for (let key in data.facebookFriends) {
-         let name = data.facebookFriends[key].name
-         let id = data.facebookFriends[key].FacebookID
-         let friends = data.facebookFriends[key].friends
-         let weight = friends.length * 4
+
+         // TARGET SHORTHAND
+         var target = data.facebookFriends[key];
+         var friends = data.facebookFriends[key].friends;
+
+         // BUILD NODE
+         var node = {
+            'id': target.FacebookID,
+            'name': target.name,
+            'friends': target.friends.length
+         }
          
-         //Push data in nodes array
-         nodes.push({
-            'id': id,
-            'name': name,
-            'weight': weight
-         })
+         // PUSH TO NODE CONTAINER
+         nodes.push(node);
 
-         //get the friends for each entry and create the links
-         for (let i in friends) {
-            let friend = friends[i].FriendId
+         // CREATE A LINK BETWEEN FRIENDS
+         for (let friend in friends) {
 
-            //Push data in links array
-            links.push({
-               'source': id,
-               'target': friend,
-               'weight': weight
-            })
+            // BUILD LINK
+            var link = {
+               'source': target.FacebookID,
+               'target': friends[friend].FriendId
+            }
+
+            // PUSH TO LINK CONTAINER
+            links.push(link)
          }
       }
-      
-      var size = nodeSize(nodes, settings);
 
-      //Generate canvas
+      // GENERATE CANVAS
       var canvas = d3.select("body").append("svg")
-         .attr("height", settings.height - settings.padding)
-         .attr("width", settings.width - settings.padding)
-         .style("background", settings.color)
+         .attr("height", settings.height - (settings.padding * 2))
+         .attr("width", settings.width - (settings.padding * 2))
+         .style("background", settings.background)
 
-
-      //Simulate nodes and links
+      // SIMULATE NODES & LINKS
       var simulation = d3.forceSimulation(nodes)
          .force("charge", d3.forceManyBody().strength(-40))
          .force("center", d3.forceCenter(settings.width / 2, settings.height / 2))
-         .force("collision", d3.forceCollide().radius((d) => { return d.weight }))
+         .force("collision", d3.forceCollide().radius(settings.collision * settings.node.multiplier))
          .force("link", d3.forceLink().id((d) => { return d.id; })
-         .distance((d) => { return d.weight * 50 }))
+         .distance(settings.distance * settings.node.multiplier))
+
+         // RENDER SIMULATION
          .on("tick", render)
 
       // SHORTHANDS FOR SPECIFIC ELEMENTS
@@ -80,44 +100,66 @@ window.watchResize(() => {
       simulation.force("link").links(links);
 
       // APPEND LINKS, NODES, LABELS & TEXT TO EACH ENTRY
-      link = link.data(links).enter().append("line");
+      link = link.data(links).enter().append("line")
       node = node.data(nodes).enter().append("circle")
-      label = label.data(nodes).enter().append("rect").style("visibility", "hidden");
-      text = text.data(nodes).enter().append("text").style("visibility", "visible");
+      label = label.data(nodes).enter().append("rect")
+      text = text.data(nodes).enter().append("text")
 
       // RENDER FUNCTION
       function render() {
+
+               //Using force properties on links and nodes
+      simulation.nodes(nodes)
+      simulation.force("link").links(links);
 
          link
             .attr("x1", (d) => { return d.source.x; })
             .attr("y1", (d) => { return d.source.y; })
             .attr("x2", (d) => { return d.target.x; })
             .attr("y2", (d) => { return d.target.y; })
-            .attr("stroke", "#2c3539")
-            .attr("stroke-width", size / 2 );
+            .attr("stroke", settings.border.color)
+            .attr("stroke-width", settings.border.size)
+            .style('pointer-events', 'none')
 
          node
-            .attr('r', (d) => { return d.weight })
+            .attr('r', (d) => { return d.friends * settings.node.multiplier })
             .attr('cx', (d) => { return d.x; })
             .attr('cy', (d) => { return d.y; })
-            .attr("stroke", "black")
-            .attr("stroke-width", (d) => { return size / 1.5 })
-            .attr("fill", "gray")
+            .attr("stroke", settings.border.color)
+            .attr("stroke-width", settings.border.size)
+            .attr("fill", settings.node.background)
+            
+            // MOUSEOVER
+            .on('mouseover', function(d) {
+               d3.select(this).attr('fill', settings.node.hover)
+               $('#tooltip').html(d.name + ' (' + d.friends + ')')
+               $('#tooltip').css('left', d3.event.pageX - ($('#tooltip').width() / 1.5) + 'px')
+               $('#tooltip').css('top', d3.event.pageY + 20 + 'px')
+               $('#tooltip').css('opacity', 1)
+            })
+
+            // MOUSEOUT
+            .on('mouseout', function() {
+               d3.select(this).attr('fill', settings.node.background)
+               $('#tooltip').css('opacity', 0)
+            })
 
          label
-            .attr('x', (d) => { return d.x - d.name.length; })
-            .attr('y', (d) => { return d.y - d.weight * 3; })
-            .attr("width", (d) => { return d.name.length * d.weight * 3; })
-            .attr("height", (d) => { return size })
-            .style("fill", "white");
+            .attr('x', (d) => { return d.x; })
+            .attr('y', (d) => { return d.y; })
+            .attr("width", 50)
+            .attr("height", 50)
+            .style("fill", 'none')
+            .style('pointer-events', 'none')
 
          text
             .attr('dx', (d) => { return d.x; })
-            .attr('dy', (d) => { return d.y; })
-            .text((d) => { return d.name; })
-            .style("font-size", size * 3)
-            .style("font-weight", 600)
-            .style("text-anchor", "middle");
+            .attr('dy', (d) => { return d.y + 5; })
+            .text((d) => { return d.name[0]; })
+            .style("font-size", settings.font.size)
+            .style("font-weight", settings.font.weight)
+            .style("text-anchor", "middle")
+            .style('pointer-events', 'none')
       }
    });
 });
